@@ -1,0 +1,13 @@
+nav:
+  - Первые шаги: getting-started
+  - Основы: essentials
+  - Возможности: features
+  - Директивы HTML: html-directives
+  - Атрибуты PHP: php-attributes
+  - Директивы Blade: blade-directives
+  - Дополнительно: advanced
+
+flatten_single_child_sections: true
+
+sort:
+  sections: mixed

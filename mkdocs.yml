@@ -1,0 +1,109 @@
+site_name: Livewire по-русски
+site_description: Перевод документации Livewire 4.x
+site_author: bugo@dragomano.ru (Bugo)
+site_url: https://livewire.dragomano.ru/
+
+repo_url: https://github.com/dragomano/livewire-russian
+edit_uri: edit/main/docs/
+
+copyright: © Bugo, 2026
+
+theme:
+  name: material
+  icon:
+    logo: simple/livewire
+  language: ru
+  features:
+    - navigation.path
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.top
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.instant.prefetch
+    - navigation.tracking
+    - navigation.footer
+    - search.highlight
+    - search.share
+    - search.suggest
+    - toc.follow
+    - content.tabs.link
+    - content.code.copy
+    - content.code.select
+    - content.code.annotate
+  font:
+    text: Inter
+    code: Fira Code
+  palette:
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Авто
+    - media: "(prefers-color-scheme: light)"
+      primary: blue
+      accent: orange
+      scheme: default
+      toggle:
+        icon: material/weather-night
+        name: Тёмный режим
+    - media: "(prefers-color-scheme: dark)"
+      primary: black
+      accent: orange
+      scheme: slate
+      toggle:
+        icon: material/weather-sunny
+        name: Светлый режим
+
+extra:
+  generator: false
+  social:
+    - icon: material/creative-commons
+      link: https://github.com/dragomano/livewire-russian/blob/main/CONTENT-LICENSE.md
+      name: Лицензия CC BY-NC-SA 4.0
+    - icon: material/sitemap
+      link: /sitemap.xml
+      name: Sitemap
+
+extra_javascript:
+  - extra.js
+
+markdown_extensions:
+  - meta
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - def_list
+  - pymdownx.critic
+  - pymdownx.caret
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.tilde
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - toc:
+      title: Содержание
+      permalink: ⚓︎
+      permalink_title: Постоянная ссылка
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+
+plugins:
+  - search:
+      lang:
+        - en
+        - ru
+  - awesome-nav # pip install mkdocs-awesome-nav
