@@ -1,0 +1,10 @@
+nav:
+  - components.md
+  - pages.md
+  - properties.md
+  - actions.md
+  - forms.md
+  - events.md
+  - lifecycle-hooks.md
+  - nesting.md
+  - testing.md
