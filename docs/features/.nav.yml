@@ -1,0 +1,15 @@
+nav:
+  - alpine.md
+  - styles.md
+  - navigate.md
+  - islands.md
+  - lazy.md
+  - loading-states.md
+  - validation.md
+  - uploads.md
+  - pagination.md
+  - url.md
+  - computed-properties.md
+  - redirecting.md
+  - downloads.md
+  - teleport.md
