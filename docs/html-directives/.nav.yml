@@ -1,0 +1,23 @@
+nav:
+  - wire-bind.md
+  - wire-click.md
+  - wire-submit.md
+  - wire-model.md
+  - wire-loading.md
+  - wire-navigate.md
+  - wire-current.md
+  - wire-cloak.md
+  - wire-dirty.md
+  - wire-confirm.md
+  - wire-transition.md
+  - wire-init.md
+  - wire-intersect.md
+  - wire-poll.md
+  - wire-offline.md
+  - wire-ignore.md
+  - wire-ref.md
+  - wire-replace.md
+  - wire-show.md
+  - wire-sort.md
+  - wire-stream.md
+  - wire-text.md
