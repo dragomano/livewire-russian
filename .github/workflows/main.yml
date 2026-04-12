@@ -1,0 +1,57 @@
+name: Deploy MkDocs to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: 3.x
+
+      - name: Cache .cache
+        uses: actions/cache@v4
+        with:
+          key: mkdocs-material-${{ runner.os }}-mkdocs-${{ hashFiles('**/requirements.txt') }}
+          path: .cache
+          restore-keys: |
+            mkdocs-material-${{ runner.os }}-mkdocs-
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Build with MkDocs
+        run: mkdocs build
+        env:
+          CI: true
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ./site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
