@@ -12,7 +12,7 @@
 
 ```shell
 # Форк и клонирование Livewire
-gh repo fork livewire/livewire --default-branch-only --clone=true --remote=false -- livewire
+gh repo fork livewire/livewire --default-branch-only --clone=true -- livewire
 
 # Переход в директорию livewire
 cd livewire
