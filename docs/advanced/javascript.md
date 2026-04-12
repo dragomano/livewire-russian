@@ -4,15 +4,15 @@
 
 Livewire и Alpine предоставляют множество утилит для создания динамических компонентов прямо в вашем HTML, однако бывают случаи, когда полезно выйти за пределы HTML и выполнить обычный JavaScript для вашего компонента.
 
-!!! warning "Для классовых компонентов требуется директива @@script"
-    Примеры на этой странице используют обычные теги `<script>`, которые работают для **однофайловых** и **многофайловых** компонентов. Если вы используете **классовые компоненты** (где Blade-шаблон находится в отдельном файле от PHP-класса), вам необходимо обернуть свои теги script директивой `@@script`:
+!!! warning "Для классовых компонентов требуется директива @script"
+    Примеры на этой странице используют обычные теги `<script>`, которые работают для **однофайловых** и **многофайловых** компонентов. Если вы используете **классовые компоненты** (где Blade-шаблон находится в отдельном файле от PHP-класса), вам необходимо обернуть свои теги script директивой `@script`:
 
     ```html
-    @@script
+    @script
     <script>
         // Ваш JavaScript здесь...
     </script>
-    @@endscript
+    @endscript
     ```
 
     Это указывает Livewire правильно обрабатывать время выполнения для классовых компонентов.
@@ -190,10 +190,11 @@ $wire.intercept(({ action, onSend, onCancel, onSuccess, onError, onFailure, onFi
 Перехватчики сообщений срабатывают при каждом обновлении компонента. Сообщение может содержать одно или несколько действий.
 
 ```js
-$wire.interceptMessage(({ message, cancel, onSend, onCancel, onSuccess, onError, onFailure, onStream, onFinish }) => {
-    // message.component  - Экземпляр компонента
-    // message.actions    - Набор действий в этом сообщении
-    // cancel()           - Отменить это сообщение
+$wire.interceptMessage(({ message, cancel, onSend, onCancel, onSuccess, onSkipped, onError, onFailure, onStream, onFinish }) => {
+    // message.component   - Экземпляр компонента
+    // message.actions     - Набор действий в этом сообщении
+    // message.isSkipped() - True, если сервер пропустил это сообщение
+    // cancel()            - Отменить это сообщение
 
     onSend(({ payload }) => {
         // payload: { snapshot, updates, calls }
@@ -204,10 +205,16 @@ $wire.interceptMessage(({ message, cancel, onSend, onCancel, onSuccess, onError,
     onSuccess(({ payload, onSync, onEffect, onMorph, onRender }) => {
         // payload: { snapshot, effects }
 
-        onSync(() => {})    // После синхронизации состояния
-        onEffect(() => {})  // После обработки эффектов
-        onMorph(async () => {})   // После морфинга DOM (должен быть асинхронным)
-        onRender(() => {})  // После завершения рендеринга
+        onSync(() => {})        // После синхронизации состояния
+        onEffect(() => {})      // После обработки эффектов
+        onMorph(async () => {}) // После морфинга DOM (должен быть асинхронным)
+        onRender(() => {})      // После завершения рендеринга
+    })
+
+    onSkipped(() => {
+        // Сервер намеренно пропустил это сообщение (например, неизменённый
+        // реактивный дочерний компонент). Нет payload, морфинга, рендера —
+        // но промисы действий всё равно разрешаются. Используйте для телеметрии или dev-инструментов.
     })
 
     onError(({ response, body, preventDefault }) => {
@@ -221,7 +228,7 @@ $wire.interceptMessage(({ message, cancel, onSend, onCancel, onSuccess, onError,
     })
 
     onFinish(() => {
-        // Выполняется после завершения морфинга DOM (или при ошибке/отмене)
+        // Выполняется после завершения морфинга DOM (или при ошибке/отмене/пропуске)
     })
 })
 ```
@@ -237,7 +244,9 @@ $wire.interceptMessage(({ message, cancel, onSend, onCancel, onSuccess, onError,
 5. `onFinish` — После завершения морфинга
 6. `onRender` — Внутри `requestAnimationFrame` (после отрисовки)
 
-Промисы действий (`.then()`) разрешаются в тот же момент, что и `onFinish` (после морфинга).
+Для пропущенных сообщений (например, неизменённый реактивный дочерний компонент) вместо `onSuccess` срабатывает `onSkipped`, затем `onFinish`. Хуки морфинга/рендеринга не вызываются, так как применять нечего.
+
+Промисы действий (`.then()`) разрешаются одновременно с `onFinish` (после морфинга или мгновенно при пропуске).
 
 ### Перехватчики запросов
 
@@ -859,7 +868,7 @@ let $wire = {
     interceptAction(actionOrCallback, callback) { ... },
 
     // Зарегистрировать перехватчик сообщения для этого экземпляра компонента
-    // Использование: $wire.interceptMessage(({ message, cancel, onSend, onCancel, onSuccess, onError, onFailure, onFinish }) => { ... })
+    // Использование: $wire.interceptMessage(({ message, cancel, onSend, onCancel, onSuccess, onSkipped, onError, onFailure, onFinish }) => { ... })
     // Или ограничить конкретным действием: $wire.interceptMessage('save', callback)
     interceptMessage(actionOrCallback, callback) { ... },
 
