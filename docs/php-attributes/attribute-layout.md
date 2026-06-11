@@ -81,7 +81,7 @@ use Livewire\Component;
 new class extends Component {
     public function render()
     {
-        return view('livewire.posts.index')
+        return $this->view()
             ->layout('layouts::dashboard', ['title' => 'Посты']);
     }
 };
