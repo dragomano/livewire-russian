@@ -251,7 +251,14 @@ Livewire отдает свой JavaScript с эндпойнта, содержа�
 
 Если вы используете Nginx с пользовательской конфигурацией, она может блокировать динамические маршруты Livewire в Laravel. Вы можете либо:
 
-- Настроить Nginx так, чтобы запросы, соответствующие `/livewire-*/`, передавались в Laravel (например, `location ~ ^/livewire-[a-f0-9]+/ { try_files $uri $uri/ /index.php?$query_string; }`)
+- Настроить Nginx так, чтобы запросы, соответствующие `/livewire-*/`, передавались в Laravel:
+
+    ```nginx
+    location ~ ^/livewire-[a-f0-9]+/ {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+    ```
+
 - [Собрать Livewire вручную](#ручная-сборка-livewire-и-alpine), чтобы избежать отдачи через Laravel
 - [Опубликовать ресурсы Livewire](#публикация-ресурсов-livewire-в-публичную-директорию), чтобы отдавать их напрямую с вашего веб-сервера
 
