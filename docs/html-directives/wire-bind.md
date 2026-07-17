@@ -4,7 +4,7 @@
 
 Если вы знакомы с директивой `x-bind` из Alpine, то эти две директивы по сути одинаковы.
 
-## Базовое использование
+## Использование
 
 ```html
 <input wire:model="message" wire:bind:class="message.length > 240 && 'text-red-500'">
