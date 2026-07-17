@@ -3,6 +3,7 @@ nav:
   - wire-click.md
   - wire-submit.md
   - wire-model.md
+  - wire-drop.md
   - wire-loading.md
   - wire-navigate.md
   - wire-current.md
@@ -18,6 +19,8 @@ nav:
   - wire-ref.md
   - wire-replace.md
   - wire-show.md
+  - wire-for.md
+  - wire-if.md
   - wire-sort.md
   - wire-stream.md
   - wire-text.md
