@@ -116,7 +116,7 @@ new class extends Component {
 
 Иногда требуется кэшировать значение вычисляемого свойства на протяжении всего времени жизни компонента Livewire, а не сбрасывать его после каждого запроса. В таких случаях можно воспользоваться [утилитами кэширования Laravel](https://laravel.com/docs/cache#retrieve-store).
 
-Ниже приведён пример вычисляемого свойства `user()`, в котором вместо прямого выполнения запроса Eloquent мы оборачиваем его в `Cache::remember()`, чтобы при последующих запросах значение бралось из кэша Laravel, а не выполнялся запрос заново:
+Ниже приведён пример вычисляемого свойства `userName()`, в котором вместо прямого выполнения запроса Eloquent мы оборачиваем его в `Cache::remember()`, чтобы при последующих запросах имя бралось из кэша Laravel, а не выполнялся запрос заново:
 
 ```php title="resources/views/components/⚡show-user.blade.php"
 <?php
@@ -130,13 +130,13 @@ new class extends Component {
     public $userId;
 
     #[Computed]
-    public function user()
+    public function userName()
     {
-        $key = 'user'.$this->getId();
+        $key = 'user-name'.$this->getId();
         $seconds = 3600; // 1 час...
 
         return Cache::remember($key, $seconds, function () {
-            return User::find($this->userId);
+            return User::find($this->userId)->name;
         });
     }
 
@@ -155,19 +155,33 @@ use Livewire\Attributes\Computed;
 use App\Models\User;
 
 #[Computed(persist: true)]
-public function user()
+public function userName()
 {
-    return User::find($this->userId);
+    return User::find($this->userId)->name;
 }
 ```
 
-В приведённом выше примере, когда к `$this->user` обращаются из компонента, значение будет продолжать кэшироваться на протяжении всего времени жизни компонента Livewire на странице. Это означает, что фактический запрос Eloquent будет выполнен только один раз.
+В приведённом выше примере, когда к `$this->userName` обращаются из компонента, значение будет продолжать кэшироваться на протяжении всего времени жизни компонента Livewire на странице. Это означает, что фактический запрос Eloquent будет выполнен только один раз.
 
 Livewire кэширует сохраняемые значения в течение 3600 секунд (один час). Вы можете переопределить это значение по умолчанию, передав дополнительный параметр `seconds` в атрибут `#[Computed]`:
 
 ```php
 #[Computed(persist: true, seconds: 7200)]
 ```
+
+!!! warning "Кэширование объектов в Laravel 13"
+    Новые приложения Laravel 13 при десериализации из кэша восстанавливают только явно разрешённые классы PHP. Если Laravel не может восстановить объект, возвращённый сохранённым или кэшируемым вычисляемым свойством, Livewire повторно вычисляет свойство, чтобы значение оставалось корректным. В режиме отладки Livewire также записывает предупреждение в журнал приложения, поскольку значение не было получено из кэша.
+
+    Предпочтительно кэшировать скалярные значения или массивы. Чтобы намеренно кэшировать объект, добавьте каждый класс из его графа объектов в `cache.serializable_classes` в `config/cache.php`:
+
+    ```php
+    <?php
+
+    'serializable_classes' => [
+        App\Models\User::class,
+    ],
+    ```
+
 
 !!! tip "Вызов `unset()` очищает и мемо, и кэш"
     Как обсуждалось ранее, вы можете очистить мемо (результат мемоизации) вычисляемого свойства с помощью метода `unset()` в PHP. Это также применимо к вычисляемым свойствам с параметром `persist: true`. При вызове `unset()` на сохраняемом вычисляемом свойстве Livewire очистит не только мемо в рамках запроса, но и само закэшированное значение в кэше Laravel.
@@ -183,13 +197,13 @@ use Livewire\Attributes\Computed;
 use App\Models\Post;
 
 #[Computed(cache: true)]
-public function posts()
+public function postTitles()
 {
-    return Post::all();
+    return Post::query()->pluck('title', 'id')->all();
 }
 ```
 
-В приведённом выше примере, пока кэш не истечёт или не будет сброшен, каждый экземпляр этого компонента в вашем приложении будет использовать одно и то же закэшированное значение для `$this->posts`.
+В приведённом выше примере, пока кэш не истечёт или не будет сброшен, каждый экземпляр этого компонента в вашем приложении будет использовать одно и то же закэшированное значение для `$this->postTitles`.
 
 Если вам нужно вручную очистить кэш для вычисляемого свойства, вы можете задать собственный ключ кэша с помощью параметра `key`:
 
@@ -200,9 +214,9 @@ use Livewire\Attributes\Computed;
 use App\Models\Post;
 
 #[Computed(cache: true, key: 'homepage-posts')]
-public function posts()
+public function postTitles()
 {
-    return Post::all();
+    return Post::query()->pluck('title', 'id')->all();
 }
 ```
 
