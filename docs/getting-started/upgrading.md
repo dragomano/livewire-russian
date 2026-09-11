@@ -771,19 +771,26 @@ public function logActivity() { ... }
 <div wire:intersect:leave="pauseVideo">...</div>
 <div wire:intersect.half="loadMore">...</div>
 <div wire:intersect.full="startAnimation">...</div>
+<div wire:intersect.half.dwell.500ms="trackImpression">...</div>
 
 <!-- С параметрами -->
 <div wire:intersect.margin.200px="loadMore">...</div>
 <div wire:intersect.threshold.50="trackScroll">...</div>
+<div wire:intersect.parent="loadWithinScroller">...</div>
 ```
 
 Доступные модификаторы:
 
 - `.once` — срабатывает только один раз
+- `.dwell.Xms` — требовать непрерывного пересечения в течение заданного времени (по умолчанию 250 мс)
 - `.half` — ждёт, пока элемент виден хотя бы наполовину
 - `.full` — ждёт, пока элемент виден полностью
 - `.threshold.X` — произвольный процент видимости (0–100)
 - `.margin.Xpx` или `.margin.X%` — отступы зоны пересечения
+- `.parent` — отслеживать относительно родительского элемента
+- `.renderless` — пропустить рендеринг после выполнения действия
+- `.async` — выполнить действие параллельно
+- `.preserve-scroll` — сохранить положение прокрутки страницы
 
 [Подробнее о wire:intersect →](/html-directives/wire-intersect)
 
