@@ -377,34 +377,26 @@ new class extends Component {
 
 Вы можете использовать стандартные вспомогательные методы Laravel для тестирования загрузки файлов.
 
-Ниже приведён полный пример тестирования компонента `UploadPhoto` с помощью Livewire:
+Ниже приведён пример тестирования однофайлового компонента `upload-photo` с помощью Livewire:
 
 ```php
 <?php
 
-namespace Tests\Feature\Livewire;
-
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use App\Livewire\UploadPhoto;
+use Illuminate\Http\UploadedFile;
 use Livewire\Livewire;
-use Tests\TestCase;
 
-class UploadPhotoTest extends TestCase
-{
-    public function test_can_upload_photo()
-    {
-        Storage::fake('avatars');
+it('can upload a photo', function () {
+    Storage::fake('avatars');
 
-        $file = UploadedFile::fake()->image('avatar.png');
+    $file = UploadedFile::fake()->image('avatar.png');
 
-        Livewire::test(UploadPhoto::class)
-            ->set('photo', $file)
-            ->call('upload', 'uploaded-avatar.png');
+    Livewire::test('upload-photo')
+        ->set('photo', $file)
+        ->call('save');
 
-        Storage::disk('avatars')->assertExists('uploaded-avatar.png');
-    }
-}
+    Storage::disk('avatars')->assertExists('uploaded-avatar.png');
+});
 ```
 
 Ниже приведён пример компонента `upload-photo`, который требуется для того, чтобы предыдущий тест прошёл успешно:
@@ -420,13 +412,20 @@ new class extends Component {
 
     public $photo;
 
-    public function upload($name)
+    public function save()
     {
-        $this->photo->storeAs('/', $name, disk: 'avatars');
+        $this->photo->storeAs(path: '/', name: 'uploaded-avatar.png', options: 'avatars');
     }
 
     // ...
 };
+?>
+
+<form wire:submit="save">
+    <input type="file" wire:model="photo">
+
+    <button type="submit">Сохранить фото</button>
+</form>
 ```
 
 Подробную информацию о тестировании загрузки файлов смотрите в [документации Laravel по тестированию загрузки файлов](https://laravel.com/docs/http-tests#testing-file-uploads).
@@ -744,6 +743,44 @@ php artisan livewire:configure-s3-upload-cleanup
     $wire.$uploadMultiple('photos', [file], successCallback, errorCallback, progressCallback, cancelledCallback)
 </script>
 ```
+
+### Обработка изображений перед загрузкой
+
+Поле ввода файла с `wire:model` начинает загрузку сразу после выбора файла. Чтобы обрезать или изменить размер изображения перед загрузкой, не добавляйте `wire:model` к исходному полю ввода и позвольте графическому редактору прочитать выбранный файл локально:
+
+```html
+<input type="file" accept="image/*">
+```
+
+Вызовите `$wire.upload()` из обработчика подтверждения редактора, передав ему обработанное изображение. Например, при наличии инициализированного экземпляра [Cropper.js 2](https://fengyuanchen.github.io/cropperjs/v2/api/) с именем `cropper` обработчик подтверждения может экспортировать и загрузить квадратный аватар:
+
+```js
+let canvas = await cropper.getCropperSelection().$toCanvas({
+    width: 256,
+    height: 256,
+})
+
+canvas.toBlob((blob) => {
+    if (! blob) {
+        alert('Не удалось экспортировать обрезанное изображение. Попробуйте ещё раз.')
+        return
+    }
+
+    let file = new File([blob], 'avatar.png', { type: 'image/png' })
+
+    $wire.upload('photo', file, () => {
+        $wire.save()
+    }, () => {
+        alert('Не удалось загрузить файл. Попробуйте ещё раз.')
+    })
+}, 'image/png')
+```
+
+Этот обработчик выполняется внутри вашей существующей интеграции с редактором, где доступны `cropper` и объект `$wire` компонента. Компоненту по-прежнему нужны трейт `WithFileUploads`, свойство `$photo` и действие `save()`, которое валидирует и сохраняет изображение, как показано [выше](#сохранение-загруженных-файлов).
+
+Оберните разметку, сгенерированную редактором, в [`wire:ignore`](/html-directives/wire-ignore), чтобы Livewire оставлял её нетронутой во время обновлений. Отключайте кнопку подтверждения на время экспорта и загрузки, чтобы предотвратить повторные загрузки.
+
+Исходное изображение остаётся в браузере. `new File()` даёт экспортированному Blob имя файла и MIME-тип, и загружается только этот файл. Вызов `save()` из колбэка успешной загрузки гарантирует, что `$photo` будет установлен до валидации и сохранения. `$wire.upload()` не возвращает promise, которого можно было бы дождаться.
 
 ## Конфигурация
 
