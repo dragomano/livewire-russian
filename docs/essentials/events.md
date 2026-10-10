@@ -194,17 +194,19 @@ public function handleNewPost($refreshPosts = false)
 }
 ```
 
-Вы также можете получить доступ к параметру `refreshPosts` из JavaScript-слушателя событий через свойство `detail` объекта события:
+Слушатели событий компонента, зарегистрированные с помощью `$wire.$on()`, получают данные события напрямую в качестве аргумента колбэка:
 
 ```html
 <script>
-    this.$on('post-created', (event) => {
-        let refreshPosts = event.detail.refreshPosts
+    this.$on('post-created', (data) => {
+        let refreshPosts = data.refreshPosts
 
         // ...
     });
 </script>
 ```
+
+Это также относится к колбэкам `Livewire.on()`. При [прослушивании событий Livewire в Alpine](#прослушивание-событий-livewire-в-alpine) используйте `$event.detail`, чтобы получить доступ к этим же данным из браузерного события.
 
 [Подробнее об использовании JavaScript внутри компонентов Livewire →](/advanced/javascript#использование-javascript-в-компонентах-livewire)
 
@@ -363,23 +365,16 @@ new class extends Component {
 ```php
 <?php
 
-namespace Tests\Feature;
-
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Livewire\CreatePost;
 use Livewire\Livewire;
 
-class CreatePostTest extends TestCase
-{
-    use RefreshDatabase;
+uses(RefreshDatabase::class);
 
-    public function test_it_dispatches_post_created_event()
-    {
-        Livewire::test(CreatePost::class)
-            ->call('save')
-            ->assertDispatched('post-created');
-    }
-}
+it('dispatches the post-created event', function () {
+    Livewire::test('post.create')
+        ->call('save')
+        ->assertDispatched('post-created');
+});
 ```
 
 В этом примере тест проверяет, что событие `post-created` отправляется с указанными данными при вызове метода `save()` в компоненте `post.create`.
@@ -391,24 +386,17 @@ class CreatePostTest extends TestCase
 ```php
 <?php
 
-namespace Tests\Feature;
-
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Livewire\Dashboard;
 use Livewire\Livewire;
 
-class DashboardTest extends TestCase
-{
-    use RefreshDatabase;
+uses(RefreshDatabase::class);
 
-    public function test_it_updates_post_count_when_a_post_is_created()
-    {
-        Livewire::test(Dashboard::class)
-            ->assertSee('Постов создано: 0')
-            ->dispatch('post-created')
-            ->assertSee('Постов создано: 1');
-    }
-}
+it('updates the post count when a post is created', function () {
+    Livewire::test('dashboard')
+        ->assertSee('Posts created: 0')
+        ->dispatch('post-created')
+        ->assertSee('Posts created: 1');
+});
 ```
 
 В этом примере тест отправляет событие `post-created`, а затем проверяет, что компонент `dashboard` корректно обрабатывает это событие и отображает обновлённое количество.
