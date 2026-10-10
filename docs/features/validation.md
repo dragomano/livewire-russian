@@ -637,22 +637,15 @@ Livewire предоставляет удобные утилиты для тес�
 ```php
 <?php
 
-namespace Tests\Feature\Livewire;
-
 use App\Livewire\CreatePost;
 use Livewire\Livewire;
-use Tests\TestCase;
 
-class CreatePostTest extends TestCase
-{
-    public function test_cant_create_post_without_title()
-    {
-        Livewire::test(CreatePost::class)
-            ->set('content', 'Sample content...')
-            ->call('save')
-            ->assertHasErrors('title');
-    }
-}
+it('cannot create a post without a title', function () {
+    Livewire::test(CreatePost::class)
+        ->set('content', 'Sample content...')
+        ->call('save')
+        ->assertHasErrors('title');
+});
 ```
 
 В дополнение к проверке наличия ошибок, метод `assertHasErrors` позволяет также уточнить утверждение до конкретных правил, передавая правила, против которых нужно выполнить проверку, в качестве второго аргумента метода:
@@ -660,14 +653,13 @@ class CreatePostTest extends TestCase
 ```php
 <?php
 
-public function test_cant_create_post_with_title_shorter_than_3_characters()
-{
+it('cannot create a post with a title shorter than 3 characters', function () {
     Livewire::test(CreatePost::class)
         ->set('title', 'Sa')
         ->set('content', 'Sample content...')
         ->call('save')
         ->assertHasErrors(['title' => ['min:3']]);
-}
+});
 ```
 
 Вы также можете проверить наличие ошибок валидации сразу для нескольких свойств:
@@ -675,12 +667,11 @@ public function test_cant_create_post_with_title_shorter_than_3_characters()
 ```php
 <?php
 
-public function test_cant_create_post_without_title_and_content()
-{
+it('cannot create a post without a title and content', function () {
     Livewire::test(CreatePost::class)
         ->call('save')
         ->assertHasErrors(['title', 'content']);
-}
+});
 ```
 
 Для получения дополнительной информации о других утилитах тестирования, предоставляемых Livewire, ознакомьтесь с [документацией по тестированию](/essentials/testing).
