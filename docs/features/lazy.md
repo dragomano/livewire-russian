@@ -416,24 +416,16 @@ Route::livewire('/dashboard', 'pages::dashboard')->defer(enabled: false);
 ```php hl_lines="13"
 <?php
 
-namespace Tests\Feature\Livewire;
-
-use App\Livewire\Dashboard;
 use Livewire\Livewire;
-use Tests\TestCase;
 
-class DashboardTest extends TestCase
-{
-    public function test_renders_successfully()
-    {
-        Livewire::withoutLazyLoading()
-            ->test(Dashboard::class)
-            ->assertSee(...);
-    }
-}
+it('renders the revenue component without lazy loading', function () {
+    Livewire::withoutLazyLoading() // [tl! highlight]
+        ->test('revenue')
+        ->assertSee('Revenue this month:');
+});
 ```
 
-Теперь, когда компонент dashboard будет отрендерен в этом тесте, он пропустит отрисовку метода `placeholder()` и вместо этого отрендерит полный компонент так, как будто ленивая загрузка вообще не применялась.
+Теперь, когда компонент `revenue` будет отрендерен в этом тесте, он пропустит отрисовку метода `placeholder()` и вместо этого отрендерит полный компонент так, как будто ленивая загрузка вообще не применялась.
 
 ## Смотрите также
 
