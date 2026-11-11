@@ -1,6 +1,7 @@
 nav:
   - morph.md
   - hydration.md
+  - release-tokens.md
   - understanding-nesting.md
   - troubleshooting.md
   - security.md
