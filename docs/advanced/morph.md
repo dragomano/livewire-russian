@@ -199,6 +199,6 @@ class Todos extends Component
 
 ## Смотрите также
 
-- **[Гидратация](/advanced/hydration)** — жизненный цикл запроса Livewire
-- **[Компоненты](/essentials/components)** — как компоненты отрисовываются и обновляются
-- **[wire:replace](/html-directives/wire-replace)** — обход морфинга для конкретных элементов
+- **[Гидратация](/advanced/hydration)** — Жизненный цикл запроса Livewire
+- **[Компоненты](/essentials/components)** — Как компоненты отрисовываются и обновляются
+- **[wire:replace](/html-directives/wire-replace)** — Обход морфинга для конкретных элементов
