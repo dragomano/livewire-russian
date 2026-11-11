@@ -258,7 +258,8 @@ todos: [
 
 ## Смотрите также
 
-- **[Хуки жизненного цикла](/essentials/lifecycle-hooks)** — использование хуков hydrate() и dehydrate()
-- **[Свойства](/essentials/properties)** — как свойства сохраняются между запросами
-- **[Морфинг](/advanced/morph)** — как Livewire обновляет DOM
-- **[Синтезаторы](/advanced/synthesizers)** — настройка сериализации свойств
+- **[Хуки жизненного цикла](/essentials/lifecycle-hooks)** — Использование хуков hydrate() и dehydrate()
+- **[Свойства](/essentials/properties)** — Как свойства сохраняются между запросами
+- **[Морфинг](/advanced/morph)** — Как Livewire обновляет DOM
+- **[Синтезаторы](/advanced/synthesizers)** — Настройка сериализации свойств
+- **[Токены выпуска](/advanced/release-tokens)** — Делают устаревшими снимки, с которыми стал несовместим деплой
